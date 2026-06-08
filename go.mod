@@ -1,4 +1,4 @@
-module github.com/yourusername/sean
+module github.com/idzamik/sean
 
 go 1.22
 

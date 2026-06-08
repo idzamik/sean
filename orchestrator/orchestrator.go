@@ -7,7 +7,7 @@ package orchestrator
 import (
 	"fmt"
 
-	"github.com/yourusername/sean/meta"
+	"github.com/idzamik/sean/meta"
 )
 
 func RunSAST(target, tool, output, rules string) error {

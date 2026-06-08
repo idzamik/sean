@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/yourusername/sean/meta"
+	"github.com/idzamik/sean/meta"
 )
 
 var (
