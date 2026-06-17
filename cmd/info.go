@@ -24,8 +24,7 @@ var infoCmd = &cobra.Command{
   ` + meta.AppName + ` info --verbose`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// TODO: вызов orchestrator.Info(infoTool, infoVerbose)
-		fmt.Printf("[%s] INFO stub: tool=%q verbose=%v\n",
-			meta.AppName, infoTool, infoVerbose)
+		fmt.Printf("[%s] INFO stub: tool=%q verbose=%v\n", meta.AppName, infoTool, infoVerbose)
 		return nil
 	},
 }

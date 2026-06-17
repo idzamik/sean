@@ -1,0 +1,73 @@
+name: semgrep
+
+install:
+  method: copy
+  dist: "dist/osemgrep"
+  dest: "tools/semgrep"
+  bin: "tools/semgrep/osemgrep"
+
+config: "tools/semgrep/rules"
+
+commands:
+
+  scan:
+    bin: "tools/semgrep/osemgrep"
+    subcommand: "scan"
+    params:
+      - type: flag_value
+        flag: "--config"
+        value: "{config}"
+      - type: flag_only
+        flag: "--metrics=off"
+      - type: flag_only
+        flag: "--disable-version-check"
+      - type: positional
+        value: "{target}"
+
+  scan-sarif:
+    bin: "tools/semgrep/osemgrep"
+    subcommand: "scan"
+    params:
+      - type: flag_value
+        flag: "--config"
+        value: "{config}"
+      - type: flag_value
+        flag: "--sarif-output"
+        value: "{output}"
+      - type: flag_only
+        flag: "--metrics=off"
+      - type: flag_only
+        flag: "--disable-version-check"
+      - type: positional
+        value: "{target}"
+
+  scan-json:
+    bin: "tools/semgrep/osemgrep"
+    subcommand: "scan"
+    params:
+      - type: flag_value
+        flag: "--config"
+        value: "{config}"
+      - type: flag_value
+        flag: "--json-output"
+        value: "{output}"
+      - type: flag_only
+        flag: "--metrics=off"
+      - type: flag_only
+        flag: "--disable-version-check"
+      - type: positional
+        value: "{target}"
+
+  version:
+    bin: "tools/semgrep/osemgrep"
+    subcommand: ""
+    params:
+      - type: flag_only
+        flag: "--version"
+
+output:
+  format: sarif
+  dir: "tools/semgrep/res"
+
+
+  

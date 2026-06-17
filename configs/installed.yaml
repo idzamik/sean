@@ -1,0 +1,3 @@
+tools:
+  - name: semgrep
+    manifest: manifests/semgrep.yaml
