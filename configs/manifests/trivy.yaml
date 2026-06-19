@@ -1,0 +1,22 @@
+version: "1"
+
+name: trivy
+bin: "tools/trivy/trivy"
+default_command: scan-sbom
+
+commands:
+  scan-sbom:
+    action: fs
+    flags:
+      - "--format cyclonedx"
+      - "--output {output}"
+      - "--skip-db-update"
+      - "{target}"
+
+  version:
+    flags:
+      - "--version"
+
+output:
+  format: json
+  dir: "tools/trivy/res"
