@@ -18,16 +18,18 @@ type StateEntry struct {
 }
 
 type Manifest struct {
-	Name     string             `yaml:"name"`
-	Commands map[string]Command `yaml:"commands"`
-	Config   string             `yaml:"config"`
-	Output   OutputConfig       `yaml:"output"`
+	Name           string             `yaml:"name"`
+	DefaultCommand string             `yaml:"default_command"`
+	Commands       map[string]Command `yaml:"commands"`
+	Config         string             `yaml:"config"`
+	Output         OutputConfig       `yaml:"output"`
 }
 
+
 type Command struct {
-	Bin        string  `yaml:"bin"`
-	Subcommand string  `yaml:"subcommand"`
-	Params     []Param `yaml:"params"`
+    Bin    string   `yaml:"bin"`
+    Action string   `yaml:"action"`
+    Flags  []string `yaml:"flags"`
 }
 
 type Param struct {
@@ -38,10 +40,14 @@ type Param struct {
 
 type OutputConfig struct {
 	Format string `yaml:"format"`
+	Dir    string `yaml:"dir"`
 }
 
 
 func configBase() string {
+	if dir := os.Getenv("SEAN_CONFIG_DIR"); dir != "" {
+		return dir
+	}
 	return "configs"
 }
 
@@ -85,3 +91,17 @@ func LoadManifest(relativePath string) (*Manifest, error) {
 }
 
 
+func LoadManifestByName(toolName string) (*Manifest, error) {
+	state, err := LoadState()
+	if err != nil {
+		return nil, fmt.Errorf("cannot load state: %w", err)
+	}
+
+	for _, entry := range state.Tools {
+		if entry.Name == toolName {
+			return LoadManifest(entry.Manifest)
+		}
+	}
+
+	return nil, fmt.Errorf("tool %q not found in installed.yaml", toolName)
+}

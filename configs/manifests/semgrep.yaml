@@ -1,73 +1,34 @@
+version: "1"
+
 name: semgrep
+bin: "tools/semgrep/osemgrep"
+default_command: scan-sarif
 
-install:
-  method: copy
-  dist: "dist/osemgrep"
-  dest: "tools/semgrep"
-  bin: "tools/semgrep/osemgrep"
-
-config: "tools/semgrep/rules"
+rules: "tools/semgrep/rules"
 
 commands:
-
-  scan:
-    bin: "tools/semgrep/osemgrep"
-    subcommand: "scan"
-    params:
-      - type: flag_value
-        flag: "--config"
-        value: "{config}"
-      - type: flag_only
-        flag: "--metrics=off"
-      - type: flag_only
-        flag: "--disable-version-check"
-      - type: positional
-        value: "{target}"
-
   scan-sarif:
-    bin: "tools/semgrep/osemgrep"
-    subcommand: "scan"
-    params:
-      - type: flag_value
-        flag: "--config"
-        value: "{config}"
-      - type: flag_value
-        flag: "--sarif-output"
-        value: "{output}"
-      - type: flag_only
-        flag: "--metrics=off"
-      - type: flag_only
-        flag: "--disable-version-check"
-      - type: positional
-        value: "{target}"
+    action: scan
+    flags:
+      - "--config {rules}"
+      - "--sarif-output {output}"
+      - "--metrics=off"
+      - "--disable-version-check"
+      - "{target}"
 
   scan-json:
-    bin: "tools/semgrep/osemgrep"
-    subcommand: "scan"
-    params:
-      - type: flag_value
-        flag: "--config"
-        value: "{config}"
-      - type: flag_value
-        flag: "--json-output"
-        value: "{output}"
-      - type: flag_only
-        flag: "--metrics=off"
-      - type: flag_only
-        flag: "--disable-version-check"
-      - type: positional
-        value: "{target}"
+    action: scan
+    flags:
+      - "--config {rules}"
+      - "--json {output}"
+      - "--metrics=off"
+      - "--disable-version-check"
+      - "{target}"
 
   version:
-    bin: "tools/semgrep/osemgrep"
-    subcommand: ""
-    params:
-      - type: flag_only
-        flag: "--version"
+    flags:
+      - "--version"
 
 output:
   format: sarif
   dir: "tools/semgrep/res"
-
-
-  
