@@ -23,8 +23,7 @@ func registerToolCommands(root *cobra.Command) {
 	}
 
 	for _, entry := range state.Tools {
-		entry := entry // захват переменной для замыкания
-
+		entry := entry
 		if requestedTool != "" && entry.Name != requestedTool {
 			registerStubCommand(root, entry.Name)
 			continue
@@ -36,7 +35,6 @@ func registerToolCommands(root *cobra.Command) {
 			registerStubCommand(root, entry.Name)
 			continue
 		}
-
 		registerToolCommand(root, manifest)
 	}
 }
@@ -92,7 +90,6 @@ func runToolCommand(manifest *Manifest, args []string) error {
 	if target == "" {
 		return fmt.Errorf("target path is required: sean %s <target> [flags...]", manifest.Name)
 	}
-
 	adapter := NewManifestAdapter(manifest)
 	return orchestrator.RunAnalyser(adapter, target, userFlags)
 }

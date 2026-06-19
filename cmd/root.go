@@ -17,7 +17,6 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// versionCmd — sean version
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print " + meta.AppName + " version",

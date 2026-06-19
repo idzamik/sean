@@ -1,4 +1,5 @@
 sean
-state/installed.yaml
+configs/installed.yaml
 tools/
 dist/
+targets/

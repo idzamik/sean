@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/idzamik/sean/meta"
+	"github.com/idzamik/sean/orchestrator"
 )
 
 var (
@@ -14,18 +16,38 @@ var (
 
 var infoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "Show system and installed tools information",
-	Long: `Выводит информацию о системе и установленных инструментах анализа:
-версии, статусы, текущие активные анализы.
+	Short: "Show installed tools and system state",
+	Long: `Выводит информацию об установленных инструментах анализа:
+бинари, доступные команды, директории результатов.
 
 Примеры:
   ` + meta.AppName + ` info
-  ` + meta.AppName + ` info --tool semgrep
+  ` + meta.AppName + ` info --tool trivy
   ` + meta.AppName + ` info --verbose`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// TODO: вызов orchestrator.Info(infoTool, infoVerbose)
-		fmt.Printf("[%s] INFO stub: tool=%q verbose=%v\n", meta.AppName, infoTool, infoVerbose)
-		return nil
+    state, err := LoadState()
+    if err != nil {
+        return fmt.Errorf("cannot load state: %w", err)
+    }
+
+    var manifests []*Manifest
+    for _, entry := range state.Tools {
+        if infoTool != "" && entry.Name != infoTool {
+            continue
+        }
+        m, err := LoadManifest(entry.Manifest)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "warn: cannot load manifest for %q: %v\n", entry.Name, err)
+            continue
+        }
+        manifests = append(manifests, m)
+    }
+
+    infoManifests := make([]orchestrator.InfoManifest, len(manifests))
+		for i, m := range manifests {
+		    infoManifests[i] = NewManifestAdapter(m)
+		}
+		return orchestrator.Info(infoManifests, infoVerbose)
 	},
 }
 
