@@ -1,7 +1,5 @@
-version: "1"
-
 name: trivy
-bin: "tools/trivy/trivy"
+bin: "/Users/idzami/курсач/sean/tools/trivy/trivy"
 default_command: scan-sbom
 
 commands:
@@ -20,3 +18,4 @@ commands:
 output:
   format: json
   dir: "tools/trivy/res"
+

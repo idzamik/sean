@@ -113,22 +113,29 @@ func runSetupConfig(srcPath string) error {
 	if m.Name == "" {
 		return fmt.Errorf("manifest must have a 'name' field")
 	}
-	if m.Bin == "" {
-		return fmt.Errorf("manifest must have a 'bin' field")
+
+	configDir := os.Getenv("SEANCONFIGDIR")
+	if configDir == "" {
+		configDir = defaultConfigDir
 	}
 
-	configDir := configBase()
 	manifestsDir := filepath.Join(configDir, "manifests")
 	if err := os.MkdirAll(manifestsDir, 0o755); err != nil {
-		return fmt.Errorf("cannot access manifests dir %s: %w", manifestsDir, err)
+		return fmt.Errorf("cannot create manifests dir %s: %w", manifestsDir, err)
 	}
 
 	destName := m.Name + ".yaml"
 	destPath := filepath.Join(manifestsDir, destName)
+	absSrc, _ := filepath.Abs(srcPath)
+	absDest, _ := filepath.Abs(destPath)
+	if absSrc == absDest {
+		return fmt.Errorf("source and destination are the same, skipping copy: %s", absSrc)
+	}
+
 	if err := copyFile(srcPath, destPath); err != nil {
 		return fmt.Errorf("cannot copy manifest: %w", err)
 	}
-	fmt.Printf("[%s] Manifest installed → %s\n", meta.AppName, destPath)
+	fmt.Printf("[%s] Manifest installed to %s\n", meta.AppName, destPath)
 
 	installedPath := filepath.Join(configDir, "installed.yaml")
 	state, err := loadOrCreateState(installedPath)
@@ -137,20 +144,24 @@ func runSetupConfig(srcPath string) error {
 	}
 
 	relManifestPath := filepath.Join("manifests", destName)
-
+	updated := false
 	for i, entry := range state.Tools {
 		if entry.Name == m.Name {
 			state.Tools[i].Manifest = relManifestPath
-			fmt.Printf("[%s] Updated existing entry for %q in installed.yaml\n", meta.AppName, m.Name)
-			return saveState(installedPath, state)
+			fmt.Printf("[%s] Updated existing entry for %q in %s\n", meta.AppName, m.Name, installedPath)
+			updated = true
+			break
 		}
 	}
 
-	state.Tools = append(state.Tools, StateEntry{
-		Name:     m.Name,
-		Manifest: relManifestPath,
-	})
-	fmt.Printf("[%s] Registered %q in installed.yaml\n", meta.AppName, m.Name)
+	if !updated {
+		state.Tools = append(state.Tools, StateEntry{
+			Name:     m.Name,
+			Manifest: relManifestPath,
+		})
+		fmt.Printf("[%s] Registered %q in %s\n", meta.AppName, m.Name, installedPath)
+	}
+
 	return saveState(installedPath, state)
 }
 
@@ -195,6 +206,18 @@ func copySelf(dest string) error {
 }
 
 func copyFile(src, dest string) error {
+	absSrc, err := filepath.Abs(src)
+	if err != nil {
+		return err
+	}
+	absDest, err := filepath.Abs(dest)
+	if err != nil {
+		return err
+	}
+	if absSrc == absDest {
+		return nil
+	}
+
 	in, err := os.Open(src)
 	if err != nil {
 		return err

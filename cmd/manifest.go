@@ -38,17 +38,26 @@ type OutputConfig struct {
 	Dir    string `yaml:"dir"`
 }
 
+
+/*
+Нахождение пути где лежат манифест файлы
+*/
 func configBase() string {
-	if dir := os.Getenv("SEAN_CONFIG_DIR"); dir != "" {
-		return dir
-	}
-	return "configs"
+	return "/etc/sean" 
 }
 
+
+/*
+Дополнение пути функции
+*/
 func resolveConfigPath(rel string) string {
 	return filepath.Join(configBase(), rel)
 }
 
+
+/*
+Парсинг глобального конфигурационного файла
+*/
 func LoadState() (*State, error) {
 	path := resolveConfigPath("installed.yaml")
 	data, err := os.ReadFile(path)
@@ -62,6 +71,10 @@ func LoadState() (*State, error) {
 	return &state, nil
 }
 
+
+/*
+Парсинг конкретного манифест файла по определенному инструменту анализа ПО
+*/
 func LoadManifest(relativePath string) (*Manifest, error) {
 	path := resolveConfigPath(relativePath)
 	data, err := os.ReadFile(path)
@@ -74,6 +87,7 @@ func LoadManifest(relativePath string) (*Manifest, error) {
 	}
 	return &manifest, nil
 }
+
 
 func LoadManifestByName(toolName string) (*Manifest, error) {
 	state, err := LoadState()

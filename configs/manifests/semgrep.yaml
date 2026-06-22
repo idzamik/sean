@@ -1,5 +1,3 @@
-version: "1"
-
 name: semgrep
 bin: "tools/semgrep/osemgrep"
 default_command: scan-sarif
@@ -32,3 +30,5 @@ commands:
 output:
   format: sarif
   dir: "tools/semgrep/res"
+
+

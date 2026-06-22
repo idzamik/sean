@@ -1,5 +1,5 @@
 tools:
-  - name: semgrep
-    manifest: manifests/semgrep.yaml
-  - name: trivy
-    manifest: manifests/trivy.yaml
+    - name: semgrep
+      manifest: manifests/semgrep.yaml
+    - name: trivy
+      manifest: manifests/trivy.yaml
